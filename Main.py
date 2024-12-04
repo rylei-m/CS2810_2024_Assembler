@@ -1,13 +1,25 @@
+import os
+
+from assembler import preprocess_lines
+
+
 def main():
     # Defining the assembly file to read from
-    filename = "your_filename_here.asm"
+    folder = "Files"
+    filename = os.path.join(folder, "test1.asm")
+
+    if not os.path.exists(filename):
+        print(f"ERROR: The file {filename} does not exist.")
+        return
 
     # Read all lines from the assembly file, and store them in a list
     with open(filename, "r") as infile:
         lines = infile.readlines()
 
     # Step 1: Preprocess the lines to remove comments and whitespace
-    # lines = preprocess_lines(lines)
+    lines = preprocess_lines(lines)
+
+    print("Preprocessed Lines:", lines)
 
     # Step 2: Use the preprocessed program to build data table
     # data_table, data_list, lines = build_data_table(lines)
@@ -28,3 +40,6 @@ def main():
     # with open("data.hex", "w") as outfile:
     # outfile.write("v3.0 hex words addressed\n00: ")
     # outfile.writelines([f"{d:04x} " for d in data_list])
+
+if __name__ == "__main__":
+    main()

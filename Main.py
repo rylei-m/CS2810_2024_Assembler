@@ -1,12 +1,12 @@
 import os
 
-from assembler import preprocess_lines, build_data_table
+from assembler import preprocess_lines, build_data_table, build_label_table
 
 
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test4.asm")
+    filename = os.path.join(folder, "test5.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -29,7 +29,10 @@ def main():
     print("Processed Program:", processed_program)
 
     # Step 3: Build a label table and strip out the labels from the code
-    # label_table, lines = create_label_table(lines)
+    label_table, instructions = build_label_table(lines)
+
+    print("Label Table:", label_table)
+    print("Processed Instructions:", instructions)
 
     # Step 4: Encode the program into a list of binary strings
     # encoded_program = encode_program(lines, label_table, data_table)

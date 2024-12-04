@@ -36,3 +36,17 @@ def build_data_table(lines):
             new_lines.append(line)
 
     return data_table, data_list, new_lines
+
+def build_label_table(lines):
+    label_table = {}
+    instructions = []
+    instructions_count = 0
+
+    for line in lines:
+        if line.endswith(":"):
+            label = line[:-1].strip()
+            label_table[label] = instructions_count
+        else:
+            instructions.append(line)
+            instructions_count += 1
+    return label_table, instructions

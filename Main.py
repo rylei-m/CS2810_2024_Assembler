@@ -1,12 +1,12 @@
 import os
 
-from assembler import preprocess_lines
+from assembler import preprocess_lines, build_data_table
 
 
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test1.asm")
+    filename = os.path.join(folder, "test4.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -22,7 +22,11 @@ def main():
     print("Preprocessed Lines:", lines)
 
     # Step 2: Use the preprocessed program to build data table
-    # data_table, data_list, lines = build_data_table(lines)
+    data_table, data_list, processed_program = build_data_table(lines)
+
+    print("Data Table:", data_table)
+    print("Data List:", data_list)
+    print("Processed Program:", processed_program)
 
     # Step 3: Build a label table and strip out the labels from the code
     # label_table, lines = create_label_table(lines)

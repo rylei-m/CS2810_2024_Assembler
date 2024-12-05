@@ -1,12 +1,12 @@
 import os
 
-from assembler import preprocess_lines, build_data_table, build_label_table
+from assembler import preprocess_lines, build_data_table, build_label_table, encode_program
 
 
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test5.asm")
+    filename = os.path.join(folder, "test7.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -35,7 +35,11 @@ def main():
     print("Processed Instructions:", instructions)
 
     # Step 4: Encode the program into a list of binary strings
-    # encoded_program = encode_program(lines, label_table, data_table)
+    binary_instructions = encode_program(lines, label_table, data_table)
+
+    print("Binary Instructions:")
+    for binary in binary_instructions:
+        print(binary)
 
     # Step 5: Convert the strings to hexadecimal and write them to a file
     # hex_program = post_process(encoded_program)

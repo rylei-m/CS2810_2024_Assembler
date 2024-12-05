@@ -1,5 +1,7 @@
 def assembler():
     pass
+# -------------------------------------------------------------------
+# step 1
 
 def preprocess_lines(lines):
     preprocessed = []
@@ -8,6 +10,9 @@ def preprocess_lines(lines):
         if line:
             preprocessed.append(line)
     return preprocessed
+
+# -------------------------------------------------------------------
+# step 2
 
 def build_data_table(lines):
     data_table = {}
@@ -37,6 +42,9 @@ def build_data_table(lines):
 
     return data_table, data_list, new_lines
 
+# -------------------------------------------------------------------
+# step 3
+
 def build_label_table(lines):
     label_table = {}
     instructions = []
@@ -50,3 +58,7 @@ def build_label_table(lines):
             instructions.append(line)
             instructions_count += 1
     return label_table, instructions
+
+# -------------------------------------------------------------------
+#Step 4
+

@@ -62,3 +62,72 @@ def build_label_table(lines):
 # -------------------------------------------------------------------
 #Step 4
 
+def register_to_binary(register):
+    reg_num = int(register[1:])
+    return f"{reg_num:03b}"
+
+def dec_to_bin(num, bits):
+    if num < 0:
+        return f"{(1 << bits) + num:0{bits}b}"
+    return f"{num:0{bits}b}"
+
+def encode_instruction(line_num, instruction, label_table, data_table):
+    parts = instruction.split()
+    opcode_map = {
+        "add": "0000", "sub": "0000", "and": "0000", "or": "0000", "slt": "0000",
+        "addi": "0101", "beq": "0011", "bne": "0110", "lw": "0001", "sw": "0010",
+        "j": "0100", "jr": "0111", "jal": "1000", "display": "1111"
+    }
+    funct_map = {
+        "add": "010", "sub": "110", "and": "000", "or": "001", "slt": "111"
+    }
+
+    opcode = opcode_map.get(parts[0], None)
+    if parts[0] not in opcode_map:
+        raise ValueError(f"Unsupported instruction: {parts[0]} at line {line_num}")
+
+    if parts[0] in ["add", "sub", "and", "or", "slt"]:
+        rd = register_to_binary(parts[1].rstrip(","))
+        rs = register_to_binary(parts[2].rstrip(","))
+        rt = register_to_binary(parts[3])
+        funct = funct_map[parts[0]]
+        return f"{opcode} {rs} {rt} {rd} {funct}"
+
+    elif parts[0] in ["addi", "beq", "bne", "lw", "sw"]:
+        rt = register_to_binary(parts[1].rstrip(","))
+        if "(" in parts[2]:
+            offset, base = parts[2].split("(")
+            offset = int(offset)
+            base = base.rstrip(")")
+            rs = register_to_binary(base)
+        elif parts[0] in ["lw", "sw"] and parts[2] in data_table:  # lw/sw with label
+            rs = register_to_binary("R0")
+            offset = data_table[parts[2]]
+        else:
+            rs = register_to_binary(parts[2].rstrip(","))
+            offset = int(parts[3]) if parts[0] == "addi" else label_table[parts[3]] - line_num - 1
+
+        immediate = dec_to_bin(offset, 6)
+        return f"{opcode} {rs} {rt} {immediate}"
+
+    elif parts[0] in ["j", "jal"]:
+        address = label_table[parts[1]]
+        immediate = dec_to_bin(address, 12)
+        return f"{opcode} {immediate}"
+
+    elif parts[0] == "jr":
+        rs = register_to_binary(parts[1])
+        return f"{opcode} {rs} 000 000000"
+
+    elif parts[0] == "display":
+        return f"{opcode} 000 000 000000"
+
+    else:
+        raise ValueError(f"Unsupported instruction format: {instruction}")
+
+def encode_program(lines, label_table, data_table):
+    binary_instructions = []
+    for i, instruction in enumerate(lines):
+        binary_instruction = encode_instruction(i, instruction, label_table, data_table)
+        binary_instructions.append(binary_instruction)
+    return binary_instructions

@@ -19,7 +19,6 @@ def build_data_table(lines):
     data_list = []
     new_lines = []
     data_section = False
-    memory_address = 0
 
     for line in lines:
         if line == ".data":
@@ -27,7 +26,6 @@ def build_data_table(lines):
             continue
         elif line == ".text":
             data_section = False
-            new_lines.append(line)
             continue
 
         if data_section:
@@ -127,10 +125,10 @@ def encode_instruction(line_num, instruction, label_table, data_table):
         raise ValueError(f"Unsupported instruction format: {instruction}")
 
 
-def encode_program(lines, label_table, data_table):
+def encode_program(processed_program, label_table, data_table):
     binary_instructions = []
-    for i, instruction in enumerate(lines):
-        if instruction.strip().endswith(":"):
+    for i, instruction in enumerate(processed_program):
+        if instruction.strip().endswith(":") or instruction.strip() in [".data", ".text"]:
             continue
         binary_instruction = encode_instruction(i, instruction, label_table, data_table)
         binary_instructions.append(binary_instruction)

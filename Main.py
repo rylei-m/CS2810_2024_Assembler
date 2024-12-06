@@ -6,7 +6,7 @@ from assembler import build_data_table, build_label_table, encode_program, prepr
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test9.asm")
+    filename = os.path.join(folder, "test7.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -32,15 +32,13 @@ def main():
 
     # Step 3: Build a label table and strip out the labels from the code
     label_table, instructions = build_label_table(lines)
-
     print("STEP 3: Build a label table and strip out the labels from the code")
     print("Label Table:", label_table)
     print("Processed Instructions:", instructions)
     print(" ")
 
     # Step 4: Encode the program into a list of binary strings
-    binary_instructions = encode_program(lines, label_table, data_table)
-
+    binary_instructions = encode_program(instructions, label_table, data_table)
     print("STEP 4: Encode the program into a list of binary strings")
     print("Binary Instructions:")
     for binary in binary_instructions:

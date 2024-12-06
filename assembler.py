@@ -134,6 +134,9 @@ def encode_program(processed_program, label_table, data_table):
         binary_instructions.append(binary_instruction)
     return binary_instructions
 
+# -------------------------------------------------------------------
+#Step 5
+
 def binary_to_hex(binary_instructions):
     return [f"{int(b, 2):08x}" for b in binary_instructions]
 

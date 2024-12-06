@@ -3,7 +3,7 @@ def assembler():
 # -------------------------------------------------------------------
 # step 1
 
-def preprocess_lines(lines):
+def preprocess(lines):
     preprocessed = []
     for line in lines:
         line = line.split("#")[0].strip()
@@ -27,6 +27,7 @@ def build_data_table(lines):
             continue
         elif line == ".text":
             data_section = False
+            new_lines.append(line)
             continue
 
         if data_section:
@@ -34,9 +35,8 @@ def build_data_table(lines):
                 label, value = line.split(":")
                 label = label.strip()
                 value = int(value.strip())
-                data_table[label] = memory_address
+                data_table[label] = len(data_list)
                 data_list.append(value)
-                memory_address += 1
         else:
             new_lines.append(line)
 
@@ -47,17 +47,18 @@ def build_data_table(lines):
 
 def build_label_table(lines):
     label_table = {}
-    instructions = []
-    instructions_count = 0
+    new_lines = []
+    line_num = 0
 
     for line in lines:
-        if line.endswith(":"):
-            label = line[:-1].strip()
-            label_table[label] = instructions_count
+        if ':' in line:
+            label = line.split(':')[0]
+            label_table[label] = line_num
         else:
-            instructions.append(line)
-            instructions_count += 1
-    return label_table, instructions
+            new_lines.append(line)
+            line_num += 1
+
+    return label_table, new_lines
 
 # -------------------------------------------------------------------
 #Step 4
@@ -125,9 +126,30 @@ def encode_instruction(line_num, instruction, label_table, data_table):
     else:
         raise ValueError(f"Unsupported instruction format: {instruction}")
 
+
 def encode_program(lines, label_table, data_table):
     binary_instructions = []
     for i, instruction in enumerate(lines):
+        if instruction.strip().endswith(":"):
+            continue
         binary_instruction = encode_instruction(i, instruction, label_table, data_table)
         binary_instructions.append(binary_instruction)
     return binary_instructions
+
+def binary_to_hex(binary_instructions):
+    return [f"{int(b, 2):08x}" for b in binary_instructions]
+
+
+def post_process(binary_instructions):
+    hex_instructions = [f"{int(b, 2):08x}" for b in binary_instructions]
+    return hex_instructions
+
+
+def write_output(hex_instructions, data_list):
+    with open("program.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.write(" ".join(hex_instructions) + "\n")
+
+    with open("data.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.write(" ".join([f"{d:04x}" for d in data_list]) + "\n")

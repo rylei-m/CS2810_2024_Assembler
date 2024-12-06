@@ -1,6 +1,6 @@
 import os
 
-from assembler import preprocess_lines, build_data_table, build_label_table, encode_program
+from assembler import build_data_table, build_label_table, encode_program, preprocess, post_process, write_output
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
         lines = infile.readlines()
 
     # Step 1: Preprocess the lines to remove comments and whitespace
-    lines = preprocess_lines(lines)
+    lines = preprocess(lines)
 
     print("Preprocessed Lines:", lines)
 
@@ -46,6 +46,8 @@ def main():
     # with open("output.hex", "w") as outfile:
     # outfile.write("v3.0 hex words addressed\n00: ")
     # outfile.writelines(hex_program)
+    # hex_instructions = post_process(binary_instructions)
+    # write_output(hex_instructions, data_list)
 
     # Step 6: Convert the data list to hexadecimal and write it to a file
     # with open("data.hex", "w") as outfile:

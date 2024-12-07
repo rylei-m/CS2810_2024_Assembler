@@ -1,12 +1,13 @@
 import os
 
-from assembler import build_data_table, build_label_table, encode_program, preprocess, post_process, write_output
+from assembler import build_data_table, build_label_table, encode_program, preprocess, post_process, write_output, \
+    write_program_output, write_data_output
 
 
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test7.asm")
+    filename = os.path.join(folder, "test12.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -52,6 +53,14 @@ def main():
     # outfile.writelines(hex_program)
     # hex_instructions = post_process(binary_instructions)
     # write_output(hex_instructions, data_list)
+    hex_instructions = post_process(binary_instructions)
+    print("STEP 5: Hex Instructions:")
+    print(hex_instructions)
+
+    # Write the hex instructions to the output file
+    write_program_output(hex_instructions)
+    write_data_output(data_list)
+    print("Hex files written: program.hex and data.hex")
 
     # Step 6: Convert the data list to hexadecimal and write it to a file
     # with open("data.hex", "w") as outfile:

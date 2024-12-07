@@ -71,7 +71,7 @@ def dec_to_bin(num, bits):
     return f"{num:0{bits}b}"
 
 def encode_instruction(line_num, instruction, label_table, data_table):
-    parts = instruction.split()
+    parts = instruction.replace(",", " ").split()
     opcode_map = {
         "add": "0000", "sub": "0000", "and": "0000", "or": "0000", "slt": "0000",
         "addi": "0101", "beq": "0011", "bne": "0110", "lw": "0001", "sw": "0010",
@@ -82,7 +82,7 @@ def encode_instruction(line_num, instruction, label_table, data_table):
     }
 
     opcode = opcode_map.get(parts[0], None)
-    if parts[0] not in opcode_map:
+    if opcode is None:
         raise ValueError(f"Unsupported instruction: {parts[0]} at line {line_num}")
 
     if parts[0] in ["add", "sub", "and", "or", "slt"]:
@@ -93,20 +93,25 @@ def encode_instruction(line_num, instruction, label_table, data_table):
         return f"{opcode} {rs} {rt} {rd} {funct}"
 
     elif parts[0] in ["addi", "beq", "bne", "lw", "sw"]:
-        rt = register_to_binary(parts[1].rstrip(","))
+        rt = register_to_binary(parts[1])
         if "(" in parts[2]:
             offset, base = parts[2].split("(")
             offset = int(offset)
             base = base.rstrip(")")
             rs = register_to_binary(base)
-        elif parts[0] in ["lw", "sw"] and parts[2] in data_table:  # lw/sw with label
+            immediate = dec_to_bin(offset, 6)
+        elif parts[0] in ["beq", "bne"] and parts[3] in label_table:
+            rs = register_to_binary(parts[2])
+            immediate = label_table[parts[3]] - line_num - 1
+            immediate = dec_to_bin(immediate, 6)
+        elif parts[2] in data_table:  # lw/sw with label
             rs = register_to_binary("R0")
             offset = data_table[parts[2]]
+            immediate = dec_to_bin(offset, 6)
         else:
-            rs = register_to_binary(parts[2].rstrip(","))
-            offset = int(parts[3]) if parts[0] == "addi" else label_table[parts[3]] - line_num - 1
+            rs = register_to_binary(parts[2])
+            immediate = dec_to_bin(int(parts[3]), 6)
 
-        immediate = dec_to_bin(offset, 6)
         return f"{opcode} {rs} {rt} {immediate}"
 
     elif parts[0] in ["j", "jal"]:
@@ -142,7 +147,7 @@ def binary_to_hex(binary_instructions):
 
 
 def post_process(binary_instructions):
-    hex_instructions = [f"{int(b, 2):08x}" for b in binary_instructions]
+    hex_instructions = [f"{int(b.replace(' ', ''), 2):04x}" for b in binary_instructions]
     return hex_instructions
 
 
@@ -154,3 +159,13 @@ def write_output(hex_instructions, data_list):
     with open("data.hex", "w") as outfile:
         outfile.write("v3.0 hex words addressed\n00: ")
         outfile.write(" ".join([f"{d:04x}" for d in data_list]) + "\n")
+
+def write_data_output(data_list):
+    with open("data.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.write(" ".join([f"{d:04x}" for d in data_list]) + "\n")
+
+def write_program_output(hex_instructions):
+    with open("program.hex", "w") as outfile:
+        outfile.write("v3.0 hex words addressed\n00: ")
+        outfile.write(" ".join(hex_instructions) + "\n")

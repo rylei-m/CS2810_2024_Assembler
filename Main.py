@@ -7,7 +7,7 @@ from assembler import build_data_table, build_label_table, encode_program, prepr
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "test12.asm")
+    filename = os.path.join(folder, "game.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
@@ -37,6 +37,10 @@ def main():
     print("Label Table:", label_table)
     print("Processed Instructions:", instructions)
     print(" ")
+
+
+    print("DEBUG: Label Table:", label_table)
+    print("DEBUG: Processed Instructions:", instructions)
 
     # Step 4: Encode the program into a list of binary strings
     binary_instructions = encode_program(instructions, label_table, data_table)

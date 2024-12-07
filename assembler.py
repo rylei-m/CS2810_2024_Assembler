@@ -47,16 +47,25 @@ def build_label_table(lines):
     label_table = {}
     new_lines = []
     line_num = 0
+    is_text_section = False
 
     for line in lines:
-        if ':' in line:
-            label = line.split(':')[0]
-            label_table[label] = line_num
-        else:
-            new_lines.append(line)
-            line_num += 1
+        if line.strip() == ".data":
+            is_text_section = False
+        elif line.strip() == ".text":
+            is_text_section = True
+            continue
+
+        if is_text_section:
+            if line.strip().endswith(":"):
+                label = line.split(':')[0].strip()
+                label_table[label] = line_num
+            else:
+                new_lines.append(line)
+                line_num += 1
 
     return label_table, new_lines
+
 
 # -------------------------------------------------------------------
 #Step 4

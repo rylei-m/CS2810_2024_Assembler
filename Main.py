@@ -7,7 +7,7 @@ from assembler import build_data_table, build_label_table, encode_program, prepr
 def main():
     # Defining the assembly file to read from
     folder = "Files"
-    filename = os.path.join(folder, "game.asm")
+    filename = os.path.join(folder, "test11.asm")
 
     if not os.path.exists(filename):
         print(f"ERROR: The file {filename} does not exist.")
